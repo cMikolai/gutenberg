@@ -1120,6 +1120,29 @@ export function getLastMultiSelectedBlockClientId( state ) {
 }
 
 /**
+ * Checks if possibleAncestorId is an ancestor of possibleDescendentId.
+ *
+ * @param {Object} state                Editor state.
+ * @param {string} possibleAncestorId   Possible ancestor client ID.
+ * @param {string} possibleDescendentId Possible descent client ID.
+ *
+ * @return {boolean} True if possibleAncestorId is an ancestor
+ *                   of possibleDescendentId, and false otherwise.
+ */
+const isAncestorOf = createSelector(
+	( state, possibleAncestorId, possibleDescendentId ) => {
+		let idToCheck = possibleDescendentId;
+		while ( possibleAncestorId !== idToCheck && idToCheck ) {
+			idToCheck = getBlockRootClientId( state, idToCheck );
+		}
+		return possibleAncestorId === idToCheck;
+	},
+	( state ) => [
+		state.editor.present.blocks,
+	],
+);
+
+/**
  * Returns true if a multi-selection exists, and the block corresponding to the
  * specified client ID is the first block of the multi-selection set, or false
  * otherwise.
@@ -1813,6 +1836,10 @@ export const getInserterItems = createSelector(
 			}
 
 			if ( ! canInsertBlockType( state, referencedBlockName, rootClientId ) ) {
+				return false;
+			}
+
+			if ( isAncestorOf( state, reusableBlock.clientId, rootClientId ) ) {
 				return false;
 			}
 

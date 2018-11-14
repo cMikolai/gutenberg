@@ -1,4 +1,8 @@
-## 3.1.3 (Unreleased)
+## 3.2.0 (Unreleased)
+
+### New Feature
+
+- `withDispatch`'s `mapDispatchToProps` function takes the `select` function as the 3rd param ([#11851](https://github.com/WordPress/gutenberg/pull/11851)).
 
 ### Bug Fix
 

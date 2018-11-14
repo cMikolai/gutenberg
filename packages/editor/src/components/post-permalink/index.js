@@ -17,6 +17,7 @@ import { safeDecodeURI } from '@wordpress/url';
  * Internal Dependencies
  */
 import PostPermalinkEditor from './editor.js';
+import PostPreviewButton from '../post-preview-button';
 import { getWPAdminURL, cleanForSlug } from '../../utils/url';
 
 class PostPermalink extends Component {
@@ -57,7 +58,7 @@ class PostPermalink extends Component {
 	}
 
 	render() {
-		const { isNew, postLink, permalinkParts, postSlug, postTitle, isEditable, isPublished } = this.props;
+		const { isNew, postLink, permalinkParts, postSlug, postTitle, isEditable, isPublished, title } = this.props;
 
 		if ( isNew || ! postLink ) {
 			return null;
@@ -66,8 +67,10 @@ class PostPermalink extends Component {
 		const { isCopied, isEditingPermalink } = this.state;
 		const ariaLabel = isCopied ? __( 'Permalink copied' ) : __( 'Copy the permalink' );
 
-		const { prefix, suffix } = permalinkParts;
-		const slug = postSlug || cleanForSlug( postTitle );
+		const { prefix, postName, suffix } = permalinkParts;
+		// Determine an alternate slug to use in case one has not been saved yet.
+		const alternateSlug = ( 'auto-draft' !== postName && postTitle === title ) ? postName : cleanForSlug( title );
+		const slug = postSlug || alternateSlug;
 		const samplePermalink = ( isEditable ) ? prefix + slug + suffix : prefix;
 
 		return (
@@ -83,16 +86,25 @@ class PostPermalink extends Component {
 
 				<span className="editor-post-permalink__label">{ __( 'Permalink:' ) }</span>
 
-				{ ! isEditingPermalink &&
+				{ ! isEditingPermalink && isPublished &&
 					<ExternalLink
 						className="editor-post-permalink__link"
 						href={ ! isPublished ? postLink : samplePermalink }
 						target="_blank"
 						ref={ ( linkElement ) => this.linkElement = linkElement }
 					>
-						{ safeDecodeURI( samplePermalink ) }
+						{ ( title || postSlug ) ? safeDecodeURI( samplePermalink ) : postLink }
 						&lrm;
 					</ExternalLink>
+				}
+
+				{ ! isEditingPermalink && ! isPublished &&
+					<PostPreviewButton
+						isPermalink={ true }
+						className="editor-post-permalink__link"
+						samplePermalink={ title || postSlug ? samplePermalink : postLink }
+						linkElement={ ( linkElement ) => this.linkElement = linkElement }
+					/>
 				}
 
 				{ isEditingPermalink &&
@@ -102,7 +114,7 @@ class PostPermalink extends Component {
 					/>
 				}
 
-				{ isEditable && ! isEditingPermalink &&
+				{ isEditable && ! isEditingPermalink && ( title || postSlug ) &&
 					<Button
 						className="editor-post-permalink__edit"
 						isLarge
@@ -131,7 +143,7 @@ class PostPermalink extends Component {
 export default compose( [
 	withSelect( ( select ) => {
 		const {
-			isEditedPostNew,
+			isCleanNewPost,
 			isPermalinkEditable,
 			getCurrentPost,
 			getPermalinkParts,
@@ -139,11 +151,12 @@ export default compose( [
 			isCurrentPostPublished,
 		} = select( 'core/editor' );
 
-		const { link } = getCurrentPost();
+		const { link, title } = getCurrentPost();
 
 		return {
-			isNew: isEditedPostNew(),
+			isNew: isCleanNewPost(),
 			postLink: link,
+			postTitle: title,
 			permalinkParts: getPermalinkParts(),
 			postSlug: getEditedPostAttribute( 'slug' ),
 			isEditable: isPermalinkEditable(),

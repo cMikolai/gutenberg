@@ -807,12 +807,6 @@
 		margin-left: $block-padding + $border-width;
 	}
 
-	// Don't do it for wide elements, this causes a horizontal scrollbar.
-	/*&[data-align="full"] .editor-block-contextual-toolbar {
-		margin-left: -$block-padding - $block-side-ui-width;
-		margin-right: -$block-padding - $block-side-ui-width;
-	}*/
-
 	// Reset pointer-events on children.
 	.editor-block-contextual-toolbar > * {
 		pointer-events: auto;

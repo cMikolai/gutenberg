@@ -460,7 +460,7 @@ export class RichText extends Component {
 		// input event. Avoid dispatching an action if the original event is
 		// blur because the content will already be up-to-date.
 		if ( ! event || ! event.originalEvent || event.originalEvent.type !== 'blur' ) {
-			this.onChange( this.createRecord(), true );
+			// this.onChange( this.createRecord(), true );
 		}
 
 		this.props.onCreateUndoLevel();
@@ -530,11 +530,11 @@ export class RichText extends Component {
 			const end = getSelectionEnd( value );
 
 			// Always handle uncollapsed selections ourselves.
-			if ( ! isCollapsed( value ) ) {
-				this.onChange( remove( value ) );
-				event.preventDefault();
-				return;
-			}
+			// if ( ! isCollapsed( value ) ) {
+			// 	this.onChange( remove( value ) );
+			// 	event.preventDefault();
+			// 	return;
+			// }
 
 			if ( this.multilineTag ) {
 				let newValue;
@@ -622,7 +622,7 @@ export class RichText extends Component {
 		// The input event does not fire when the whole field is selected and
 		// BACKSPACE is pressed.
 		if ( keyCode === BACKSPACE ) {
-			this.onChange( this.createRecord(), true );
+			// this.onChange( this.createRecord(), true );
 		}
 
 		// `scrollToRect` is called on `nodechange`, whereas calling it on

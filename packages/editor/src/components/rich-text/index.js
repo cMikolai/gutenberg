@@ -59,7 +59,6 @@ import { pickAriaProps } from './aria';
 import { getPatterns } from './patterns';
 import { withBlockEditContext } from '../block-edit/context';
 import { ListEdit } from './list-edit';
-import { RemoveBrowserShortcuts } from './remove-browser-shortcuts';
 
 /**
  * Browser dependencies
@@ -897,7 +896,6 @@ export class RichText extends Component {
 						</Fragment>
 					) }
 				</Autocomplete>
-				{ isSelected && <RemoveBrowserShortcuts /> }
 			</div>
 		);
 	}

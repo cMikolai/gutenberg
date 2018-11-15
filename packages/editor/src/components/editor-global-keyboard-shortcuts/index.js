@@ -46,7 +46,6 @@ class EditorGlobalKeyboardShortcuts extends Component {
 		super( ...arguments );
 
 		this.selectAll = this.selectAll.bind( this );
-		this.undoOrRedo = this.undoOrRedo.bind( this );
 		this.save = this.save.bind( this );
 		this.deleteSelectedBlocks = this.deleteSelectedBlocks.bind( this );
 		this.clearMultiSelection = this.clearMultiSelection.bind( this );
@@ -56,18 +55,6 @@ class EditorGlobalKeyboardShortcuts extends Component {
 		const { rootBlocksClientIds, onMultiSelect } = this.props;
 		event.preventDefault();
 		onMultiSelect( first( rootBlocksClientIds ), last( rootBlocksClientIds ) );
-	}
-
-	undoOrRedo( event ) {
-		const { onRedo, onUndo } = this.props;
-
-		if ( event.shiftKey ) {
-			onRedo();
-		} else {
-			onUndo();
-		}
-
-		event.preventDefault();
 	}
 
 	save( event ) {
@@ -97,14 +84,12 @@ class EditorGlobalKeyboardShortcuts extends Component {
 	}
 
 	render() {
-		const { selectedBlockClientIds } = this.props;
+		const { selectedBlockClientIds, onUndo, onRedo } = this.props;
 		return (
 			<Fragment>
 				<KeyboardShortcuts
 					shortcuts={ {
 						[ rawShortcut.primary( 'a' ) ]: this.selectAll,
-						[ rawShortcut.primary( 'z' ) ]: this.undoOrRedo,
-						[ rawShortcut.primaryShift( 'z' ) ]: this.undoOrRedo,
 						backspace: this.deleteSelectedBlocks,
 						del: this.deleteSelectedBlocks,
 						escape: this.clearMultiSelection,
@@ -114,6 +99,9 @@ class EditorGlobalKeyboardShortcuts extends Component {
 					bindGlobal
 					shortcuts={ {
 						[ rawShortcut.primary( 's' ) ]: this.save,
+						[ rawShortcut.primary( 'z' ) ]: flow( preventDefault, onUndo ),
+						[ rawShortcut.primaryShift( 'z' ) ]: flow( preventDefault, onRedo ),
+						[ rawShortcut.primary( 'y' ) ]: flow( preventDefault, onRedo ),
 					} }
 				/>
 				{ selectedBlockClientIds.length > 0 && (
